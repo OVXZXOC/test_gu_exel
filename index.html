@@ -10,99 +10,57 @@
 <div class="container">
   <h1>Kalkulator Premii - Gang Unit</h1>
 
-  <!-- Formularz na wpisanie danych -->
-  <div id="formularz"></div>
+  <form id="premieForm">
+    <label for="imie">Imię:</label>
+    <input type="text" id="imie" name="imie">
+    
+    <label for="nazwisko">Nazwisko:</label>
+    <input type="text" id="nazwisko" name="nazwisko">
+    
+    <label for="uid">UID:</label>
+    <input type="text" id="uid" name="uid">
+    
+    <button type="button" onclick="wyslijDane()">Wyślij</button>
+  </form>
 
-  <!-- Przyciski i formularz -->
-  <div>
-    <label>Imię: </label>
-    <input type="text" id="imie">
-    <label>Nazwisko: </label>
-    <input type="text" id="nazwisko">
-    <label>UID: </label>
-    <input type="text" id="uid">
-  </div>
+  <button onclick="policzPremie()">Oblicz premię</button>
 
-  <div id="formularz">
-    <!-- Automatycznie wygenerowane akcje -->
-  </div>
-
-  <button onclick="policzPremie()">Oblicz premię i wyślij</button>
 </div>
 
 <script>
-// Cennik
-const cennik = {
-  "Patrol (Screen z dispatcha)": 2000,
-  "Reakcja na marka": 5000,
-  "Cayo/FZ": 10000,
-  "Wezwania": 2000,
-  "Przesłuchanie": 15000,
-  "Napad na biznes": 6000,
-  "Stworzenie teczki": 50000,
-  "Napad na bank": 7000,
-  "Drop, MCL": 25000,
-  "Dealerzy, magazyny": 15000,
-  "Udzial w tasku": 5000,
-  "Aresztowania": 3000,
-  "Pomoc w akademiach itd": 5000,
-  "Porwania, Arenki itp": 7000
-};
+  function wyslijDane() {
+    const dane = {
+      imie: document.getElementById("imie").value,
+      nazwisko: document.getElementById("nazwisko").value,
+      uid: document.getElementById("uid").value,
+      premia: calculatePremia() // Funkcja obliczająca premię
+    };
 
-// URL webhooka z Google Apps Script
-const webhook = "https://script.google.com/macros/s/AKfycbwQF_PryaRjwU2jGPUib-TZyhO9ev8mwyVzZesvXF811sDmfnuEYWNNSOrdb6L-210LCg/exec";
+    console.log("Wysyłane dane:", dane);  // Sprawdzanie danych w konsoli
 
-// Wygeneruj formularz z cennikiem
-const formularz = document.getElementById("formularz");
-
-for (let akcja in cennik) {
-  formularz.innerHTML += `
-    <div class="akcja">
-      <label>${akcja}</label>
-      <input type="number" id="${akcja}">
-    </div>
-  `;
-}
-
-// Funkcja do obliczenia premii i wysłania do Google Sheets
-function policzPremie() {
-  let suma = 0;
-  // Zbieramy dane z formularza
-  for (let akcja in cennik) {
-    const ilosc = parseInt(document.getElementById(akcja).value) || 0;
-    suma += ilosc * cennik[akcja];
+    fetch("https://script.google.com/macros/s/AKfycby5lehiqhnfslMDAsMbfjjtc93bifjrtq2US7EOkUz5DsNsAxbVEm3jAPSZMcIrKloynw/exec", {
+      method: "POST",
+      body: JSON.stringify(dane),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(response => response.text())
+    .then(data => {
+      alert("Dane zostały wysłane: " + data);
+    })
+    .catch(error => {
+      console.error("Błąd:", error);
+      alert("Wystąpił błąd.");
+    });
   }
 
-  // Zbieramy dane osobowe z formularza
-  const imie = document.getElementById("imie").value;
-  const nazwisko = document.getElementById("nazwisko").value;
-  const uid = document.getElementById("uid").value;
-
-  // Tworzymy obiekt z danymi do wysłania
-  const dane = {
-    imie: imie,
-    nazwisko: nazwisko,
-    uid: uid,
-    premia: suma
-  };
-
-  // Wysyłamy dane do Google Sheets za pomocą fetch
-  fetch(webhook, {
-    method: "POST",
-    body: JSON.stringify(dane),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  })
-  .then(response => response.text())
-  .then(data => {
-    alert("Dane zostały wysłane do Google Sheets: " + data);
-  })
-  .catch(err => {
-    console.error("Błąd:", err);
-    alert("Wystąpił błąd podczas wysyłania danych.");
-  });
-}
+  function policzPremie() {
+    // Funkcja obliczająca premię (przykład)
+    let suma = 0;
+    // Twoje obliczenia premii, tu wstaw kod do obliczania premii
+    alert(`Twoja premia: ${suma}`);
+  }
 </script>
 
 </body>
