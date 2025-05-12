@@ -19,13 +19,12 @@
     <input type="text" id="surname" name="surname" required><br><br>
 
     <label for="uid">UID:</label>
-    <input type="text" id="uid" name="uid" placeholder="Wpisz UID" required><br><br>
+    <input type="text" id="uid" name="uid" maxlength="11" pattern="\d{11}" placeholder="999999" required><br><br>
 
     <!-- Cennik -->
     <div id="akcje"></div>
 
     <button type="button" onclick="policzPremie()">Oblicz premię</button>
-    <button type="submit">Zapisz do Google Sheets</button>
   </form>
 </div>
 
@@ -48,13 +47,14 @@ const cennik = {
   "Złapanie opaski": 7000
 };
 
-// Generowanie formularza z akcjami
-const formularz = document.getElementById("akcje");
+const formularz = document.getElementById("formularz");
+
+// Tworzymy pola do wyboru na podstawie cennika
 for (let akcja in cennik) {
   formularz.innerHTML += `
     <div class="akcja">
       <label>${akcja}</label>
-      <input type="number" id="${akcja}" min="0">
+      <input type="number" id="${akcja}">
     </div>
   `;
 }
@@ -65,49 +65,37 @@ function policzPremie() {
     const ilosc = parseInt(document.getElementById(akcja).value) || 0;
     suma += ilosc * cennik[akcja];
   }
+
+  // Wyświetlamy wynik w oknie alertu
   alert(`Łączna premia: ${suma.toLocaleString()} $`);
-  return suma; // Zwracamy premię, żeby można było ją zapisać w formularzu
-}
 
-document.getElementById('formularz').addEventListener('submit', function(event) {
-  event.preventDefault(); // Zapobiega domyślnemu wysłaniu formularza
-
-  // Zbieramy dane z formularza
+  // Wysyłamy dane do Google Sheets
   const name = document.getElementById('name').value;
   const surname = document.getElementById('surname').value;
   const uid = document.getElementById('uid').value;
 
-  // Walidacja UID – sprawdzamy, czy to liczby (mogą być dowolnej długości)
-  const uidPattern = /^\d+$/;
-  if (!uidPattern.test(uid)) {
-    alert("UID musi składać się tylko z cyfr!");
-    return;
-  }
-
-  const premia = policzPremie(); // Liczymy premię
-
-  // Tworzymy dane do wysłania
+  // Przygotowujemy dane do wysłania
   const formData = new FormData();
   formData.append('name', name);
   formData.append('surname', surname);
   formData.append('uid', uid);
-  formData.append('bonus', premia);
+  formData.append('bonus', suma);
 
-  // Wysyłamy dane do Google Sheets
-  fetch('https://script.google.com/macros/s/AKfycbxQq7uFxcLF__zwGMHRYtqxoZ2rXBn4RTY-VRC0zXsAkTdlAZFVaasNKUGeYC0m9woiLA/exec', {
+  // Wysyłamy dane do Google Apps Script (tutaj trzeba podać URL)
+  fetch('https://script.google.com/macros/s/your-script-id/exec', {
     method: 'POST',
     body: formData
   })
   .then(response => response.text())
-  .then(result => {
-    console.log('Data saved:', result);
-    alert('Dane zostały zapisane do Google Sheets');
+  .then(data => {
+    console.log(data);
+    alert("Dane zostały zapisane w Google Sheets");
   })
   .catch(error => {
-    console.error('Error:', error);
-    alert('Wystąpił błąd przy zapisywaniu danych.');
+    console.error(error);
+    alert("Wystąpił błąd podczas zapisywania danych");
   });
-});
+}
 </script>
 
 </body>
