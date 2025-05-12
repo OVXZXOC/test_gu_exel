@@ -12,33 +12,42 @@
 
   <form id="premieForm">
     <label for="imie">Imię:</label>
-    <input type="text" id="imie" name="imie">
+    <input type="text" id="imie" name="imie" required>
     
     <label for="nazwisko">Nazwisko:</label>
-    <input type="text" id="nazwisko" name="nazwisko">
+    <input type="text" id="nazwisko" name="nazwisko" required>
     
     <label for="uid">UID:</label>
-    <input type="text" id="uid" name="uid">
+    <input type="text" id="uid" name="uid" required>
+    
+    <label for="premia">Premia:</label>
+    <input type="number" id="premia" name="premia" required>
     
     <button type="button" onclick="wyslijDane()">Wyślij</button>
   </form>
 
-  <button onclick="policzPremie()">Oblicz premię</button>
-
 </div>
 
 <script>
+  // Funkcja obliczająca premię (jeśli potrzebujesz logiki obliczeniowej)
+  function calculatePremia() {
+    const premiaInput = document.getElementById("premia");
+    const premia = parseFloat(premiaInput.value);
+    return isNaN(premia) ? 0 : premia; // Zwraca 0, jeśli wartość jest niepoprawna
+  }
+
+  // Funkcja wysyłająca dane do Google Apps Script
   function wyslijDane() {
     const dane = {
       imie: document.getElementById("imie").value,
       nazwisko: document.getElementById("nazwisko").value,
       uid: document.getElementById("uid").value,
-      premia: calculatePremia() // Funkcja obliczająca premię
+      premia: calculatePremia() // Teraz mamy funkcję calculatePremia
     };
 
-    console.log("Wysyłane dane:", dane);  // Sprawdzanie danych w konsoli
+    console.log("Wysyłane dane:", dane); // Sprawdzenie danych w konsoli
 
-    fetch("https://script.google.com/macros/s/AKfycby5lehiqhnfslMDAsMbfjjtc93bifjrtq2US7EOkUz5DsNsAxbVEm3jAPSZMcIrKloynw/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbxx7zjJRRIOVR-VMcOZ7kizlnvdFjwYPqDJBcZ1wN0yPC9VBhmm5Vvzy__beTw8hhT1Ig/exec" {
       method: "POST",
       body: JSON.stringify(dane),
       headers: {
@@ -53,13 +62,6 @@
       console.error("Błąd:", error);
       alert("Wystąpił błąd.");
     });
-  }
-
-  function policzPremie() {
-    // Funkcja obliczająca premię (przykład)
-    let suma = 0;
-    // Twoje obliczenia premii, tu wstaw kod do obliczania premii
-    alert(`Twoja premia: ${suma}`);
   }
 </script>
 
